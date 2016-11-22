@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
+import okhttp3.ResponseBody;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.jackson.JacksonConverterFactory;
@@ -66,6 +67,12 @@ public class HttpTools {
                 .unsubscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(s);
+    }
+
+    public void downPic(Subscriber<ResponseBody> subscriber, String url) {
+        Observable observable = mApiService.downPic(url);
+        toSubscribe(observable, subscriber);
+
     }
 
 }
