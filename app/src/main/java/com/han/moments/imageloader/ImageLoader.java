@@ -21,30 +21,21 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import okhttp3.ResponseBody;
 import rx.Subscriber;
 
 public class ImageLoader {
+    private static final String TAG = ImageLoader.class.getSimpleName();
     private static final int SUCCESS = 1;
     private static final int FAILED = 0;
 
     private static int sImageWidth;
 
     private static Context sContext;
-    private static ImageLoader instance;
-    private static ExecutorService sThreadPool = Executors.newCachedThreadPool();
     private LruCache<String, Bitmap> mLruCache;
     private DiskLruCache mDiskCache;
 
-    /**
-     * 初始化ImageLoader
-     *
-     * @param context
-     * @param width   预想的图片宽度
-     */
     public static void init(Context context, int width) {
         sContext = context;
         sImageWidth = width;
@@ -85,9 +76,11 @@ public class ImageLoader {
             public void handleMessage(Message msg) {
                 switch (msg.what) {
                     case SUCCESS:
+                        Log.i(TAG, "load success. url=" + url);
                         imageView.setImageBitmap((Bitmap) msg.obj);
                         break;
                     case FAILED:
+                        Log.i(TAG, "load failed. url=" + url);
                         imageView.setImageBitmap(null);
                         break;
                 }
@@ -96,7 +89,7 @@ public class ImageLoader {
 
         Bitmap bmp = getFromLru(url);
         if (null != bmp) {
-            Log.i(ImageLoader.class.getSimpleName(), "getFromLru");
+            Log.d(TAG, "getFromLru url=" + url);
             Message msg = handler.obtainMessage(SUCCESS, bmp);
             msg.sendToTarget();
             return;
@@ -104,7 +97,7 @@ public class ImageLoader {
 
         bmp = getFromDisk(url);
         if (null != bmp) {
-            Log.i(ImageLoader.class.getSimpleName(), "getFromDisk");
+            Log.d(TAG, "getFromDisk url=" + url);
             Message msg = handler.obtainMessage(SUCCESS, bmp);
             msg.sendToTarget();
             return;
@@ -143,7 +136,7 @@ public class ImageLoader {
     // 缩放图片
     private Bitmap scaleImage(Bitmap bmp) {
         int sample = bmp.getWidth() / sImageWidth;
-        if (sample <= 0){
+        if (sample <= 0) {
             sample = 1;
         }
         int height = bmp.getHeight() / sample;
@@ -237,7 +230,6 @@ public class ImageLoader {
 
                 outputStream.write(fileReader, 0, read);
                 fileSizeDownloaded += read;
-                Log.d(this.toString(), "file download: " + fileSizeDownloaded + " of " + fileSize);
             }
 
             outputStream.flush();

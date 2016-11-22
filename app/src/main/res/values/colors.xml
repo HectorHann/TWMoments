@@ -3,22 +3,5 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
-    <color name="blue">#539FDA</color>
-    <color name="white">#ffffffff</color>
-    <color name="gray">#eeeeee</color>
-    <color name="bgray">#999999</color>
-    <color name="bond">#444444</color>
-    <color name="fen">#E9408F</color>
-    <color name="fenhuang">#FF6F3D</color>
-    <color name="shenhuang">#FF3835</color>
-    <color name="qianred">#ff5959</color>
-    <color name="shenred">#D50001</color>
-    <color name="zise">#DF9EFC</color>
-    <color name="qianhuang">#FEF8B5</color>
-    <color name="qianblue">#18B4ED</color>
-    <color name="shenblue">#445899</color>
-    <color name="black">#000000</color>
-    <color name="shenfen">#FF537B</color>
-    <color name="tarns">#ab000000</color>
-
+    <color name="username">#4496C0</color>
 </resources>

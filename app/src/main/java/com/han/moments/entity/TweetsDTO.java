@@ -3,6 +3,8 @@
  */
 package com.han.moments.entity;
 
+import android.text.TextUtils;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
@@ -58,6 +60,10 @@ public class TweetsDTO {
 
     public List<CommentsDTO> getComments() {
         return comments;
+    }
+
+    public boolean isUsefulTweet() {
+        return TextUtils.isEmpty(error) && TextUtils.isEmpty(unknown_error);
     }
 
 }

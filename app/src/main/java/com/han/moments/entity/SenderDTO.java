@@ -3,6 +3,8 @@
  */
 package com.han.moments.entity;
 
+import android.text.TextUtils;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
@@ -41,6 +43,10 @@ public class SenderDTO {
 
     public String getAvatar() {
         return avatar;
+    }
+
+    public String getDisplayName() {
+        return TextUtils.isEmpty(nick) ? username : nick;
     }
 
 }
