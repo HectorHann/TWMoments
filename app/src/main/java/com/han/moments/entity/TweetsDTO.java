@@ -63,7 +63,15 @@ public class TweetsDTO {
     }
 
     public boolean isUsefulTweet() {
-        return TextUtils.isEmpty(error) && TextUtils.isEmpty(unknown_error);
+        if (!TextUtils.isEmpty(error) || !TextUtils.isEmpty(unknown_error)) {
+            return false;
+        }
+
+        if (TextUtils.isEmpty(content) && (null == images || images.size() == 0)) {
+            return false;
+        }
+
+        return true;
     }
 
 }

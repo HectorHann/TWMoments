@@ -3,7 +3,7 @@
     android:id="@+id/iv_imageview_item"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginTop="10dp"
     android:orientation="vertical"
     android:background="@mipmap/img_def"
+    android:layout_margin="2dp"
     android:scaleType="fitXY" />

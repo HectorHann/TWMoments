@@ -5,6 +5,7 @@ import android.util.Log;
 import com.han.moments.entity.TweetsDTO;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -12,7 +13,7 @@ import java.util.List;
  */
 
 public class DataProvider {
-    public static final int PER_PAGER_COUNT = 5;
+    private static final int PER_PAGER_COUNT = 5;
     private List<TweetsDTO> mTweetsList;
 
     private DataProvider() {
@@ -46,7 +47,17 @@ public class DataProvider {
             end = mTweetsList.size() - 1;
         }
         Log.i(DataProvider.class.getSimpleName(),start+"|"+end+"|"+mTweetsList.size());
-        result = mTweetsList.subList(start, end);
+        result.addAll(mTweetsList.subList(start, end));
+        if (result.isEmpty()){
+            return result;
+        }
+        Iterator<TweetsDTO> iterator = result.iterator();
+        while (iterator.hasNext()){
+            if (!iterator.next().isUsefulTweet()){
+                iterator.remove();
+            }
+        }
+
         return result;
     }
 }

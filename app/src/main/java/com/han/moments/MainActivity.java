@@ -11,7 +11,7 @@ import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.han.moments.adpter.RefreshAdapter;
+import com.han.moments.adpter.RecyclerViewAdapter;
 import com.han.moments.entity.TweetsDTO;
 import com.han.moments.entity.UserInfoDTO;
 import com.han.moments.http.HttpTools;
@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
     RecyclerView mRecyclerView;
     @BindView(R.id.layout_swiperefresh)
     SwipeRefreshLayout mSwipeRefreshLayout;
-    RefreshAdapter mRefreshAdapter;
+    RecyclerViewAdapter mRefreshAdapter;
 
     private int cur_pager = 0;
 
@@ -66,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initRecycleView() {
-        mRefreshAdapter = new RefreshAdapter(this, mTweetsList, mUserInfo);
+        mRefreshAdapter = new RecyclerViewAdapter(this, mTweetsList, mUserInfo);
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         mRecyclerView.setAdapter(mRefreshAdapter);
@@ -162,16 +162,16 @@ public class MainActivity extends AppCompatActivity {
                 int lastVisibleItem = layoutManager.findLastVisibleItemPosition();
 
                 if (totalItemCount == lastVisibleItem + 2) {
-                    if (mRefreshAdapter.getMoreStatus() == RefreshAdapter.LOAD_NO_MORE || mRefreshAdapter.getMoreStatus() == RefreshAdapter.LOADING) {
+                    if (mRefreshAdapter.getMoreStatus() == RecyclerViewAdapter.LOAD_NO_MORE || mRefreshAdapter.getMoreStatus() == RecyclerViewAdapter.LOADING) {
                         return;
                     }
                     mRefreshAdapter.changeMoreStatus(mRefreshAdapter.LOADING);
                     new Handler().postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            Log.i(TAG,"getTweets");
+                            Log.i(TAG, "getTweets");
                             List<TweetsDTO> moredate = DataProvider.getInstance().getTweetsList(++cur_pager);
-                            if (moredate.isEmpty() || moredate.size() < DataProvider.getInstance().PER_PAGER_COUNT) {
+                            if (moredate.isEmpty()) {
                                 mRefreshAdapter.changeMoreStatus(mRefreshAdapter.LOAD_NO_MORE);
                             } else {
                                 mTweetsList.addAll(moredate);
@@ -179,7 +179,7 @@ public class MainActivity extends AppCompatActivity {
                                 mRefreshAdapter.changeMoreStatus(mRefreshAdapter.LOAD_FINISH);
                             }
                         }
-                    }, 1000);
+                    }, 3000);
                 }
             }
         });
