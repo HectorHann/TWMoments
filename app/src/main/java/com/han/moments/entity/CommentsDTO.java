@@ -1,15 +1,9 @@
-/**
- * Copyright 2016 aTool.org
- */
+
 package com.han.moments.entity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 /**
- * Auto-generated: 2016-11-20 20:52:2
- *
- * @author aTool.org (i@aTool.org)
- * @website http://www.atool.org/json2javabean.php
+ * Created by Han on 2016/11/21.
  */
 public class CommentsDTO {
 

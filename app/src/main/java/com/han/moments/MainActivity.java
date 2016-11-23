@@ -11,6 +11,7 @@ import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.han.moments.adpter.DividerLineDecoration;
 import com.han.moments.adpter.RecyclerViewAdapter;
 import com.han.moments.entity.TweetsDTO;
 import com.han.moments.entity.UserInfoDTO;
@@ -25,7 +26,9 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import rx.Subscriber;
 
-
+/**
+ * Created by Han on 2016/11/20.
+ */
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = MainActivity.class.getSimpleName();
     public static final String USER_NAME = "USER_NAME";
@@ -68,6 +71,8 @@ public class MainActivity extends AppCompatActivity {
     private void initRecycleView() {
         mRefreshAdapter = new RecyclerViewAdapter(this, mTweetsList, mUserInfo);
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
+        mRecyclerView.addItemDecoration(new DividerLineDecoration(this,
+                DividerLineDecoration.VERTICAL_LIST));
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         mRecyclerView.setAdapter(mRefreshAdapter);
     }

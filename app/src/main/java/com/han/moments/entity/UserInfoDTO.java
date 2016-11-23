@@ -5,7 +5,7 @@ import android.text.TextUtils;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * Created by liukun on 16/3/5.
+ * Created by Han on 2016/11/21.
  */
 public class UserInfoDTO extends BaseDTO {
 

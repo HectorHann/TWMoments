@@ -4,15 +4,21 @@ import android.content.Context;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.han.moments.R;
 import com.han.moments.adpter.viewholder.FooterViewHolder;
 import com.han.moments.adpter.viewholder.HeardViewHolder;
 import com.han.moments.adpter.viewholder.TweetItemViewHolder;
+import com.han.moments.entity.CommentsDTO;
+import com.han.moments.entity.ImagesDTO;
 import com.han.moments.entity.TweetsDTO;
 import com.han.moments.entity.UserInfoDTO;
 import com.han.moments.imageloader.ImageLoader;
@@ -21,7 +27,7 @@ import com.han.moments.utils.ScreenUtil;
 import java.util.List;
 
 /**
- * Created by 刘楠 on 2016/9/10 0010.18:06
+ * Created by Han on 2016/11/22.
  */
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
@@ -76,7 +82,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             tweetItemViewHolder.mSenderContent.setText(tweetsDTO.getContent());
             ImageLoader.getInstance().load(tweetItemViewHolder.mSenderHead, tweetsDTO.getSender().getAvatar());
 
-            if (tweetsDTO.getImages() != null && !tweetsDTO.getImages().isEmpty()) {
+            List<ImagesDTO> imagesDTOs = tweetsDTO.getImages();
+            if (imagesDTOs != null && !imagesDTOs.isEmpty()) {
                 ViewGroup.LayoutParams gridParams = tweetItemViewHolder.mImageGrid.getLayoutParams();
                 gridParams.width = (int) (ScreenUtil.getScreenWidth(mContext) * 0.85);
                 int itemwidth = (gridParams.width - ScreenUtil.dip2px(mContext, 2) * 6) / 3;
@@ -86,6 +93,16 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 tweetItemViewHolder.mImageGrid.setLayoutManager(new GridLayoutManager(mContext, 3, LinearLayoutManager.VERTICAL, false));
                 tweetItemViewHolder.mImageGrid.setAdapter(new GridViewAdapter(tweetsDTO.getImages(), mContext, itemwidth));
                 tweetItemViewHolder.mImageGrid.setTag(tweetsDTO.toString());
+            }
+            List<CommentsDTO> commentsDTOs = tweetsDTO.getComments();
+            if (commentsDTOs != null && !commentsDTOs.isEmpty()) {
+                tweetItemViewHolder.mCommentLayout.removeAllViews();
+                for (CommentsDTO item : commentsDTOs) {
+                    View commentview = mInflater.inflate(R.layout.comment_item, null);
+                    TextView tv_comment = (TextView) commentview.findViewById(R.id.tv_comment);
+                    mixCommentContent(tv_comment, item.getSender().getDisplayName(), item.getContent());
+                    tweetItemViewHolder.mCommentLayout.addView(commentview);
+                }
             }
         } else if (holder instanceof FooterViewHolder) {
             FooterViewHolder footerViewHolder = (FooterViewHolder) holder;
@@ -148,5 +165,12 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     public void setUserInfo(UserInfoDTO userInfo) {
         mUser = userInfo;
         notifyDataSetChanged();
+    }
+
+    private void mixCommentContent(TextView textView, String name, String content) {
+        SpannableString spannableString = new SpannableString(name + ":" + content);
+        spannableString.setSpan(new ForegroundColorSpan(mContext.getResources().getColor(R.color.username)),
+                0, name.length() + 1, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+        textView.setText(spannableString);
     }
 }

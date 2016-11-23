@@ -25,8 +25,8 @@ public class TweetItemViewHolder extends RecyclerView.ViewHolder {
     public TextView mSenderContent;
     @BindView(R.id.rv_image_grid)
     public RecyclerView mImageGrid;
-    @BindView(R.id.layout_tweet_content)
-    public LinearLayout mTweetContentLayout;
+    @BindView(R.id.layout_comment)
+    public LinearLayout mCommentLayout;
 
     public TweetItemViewHolder(View itemView) {
         super(itemView);

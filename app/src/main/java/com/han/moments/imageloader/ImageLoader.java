@@ -25,6 +25,9 @@ import java.io.OutputStream;
 import okhttp3.ResponseBody;
 import rx.Subscriber;
 
+/**
+ * Created by Han on 2016/11/22.
+ */
 public class ImageLoader {
     private static final String TAG = ImageLoader.class.getSimpleName();
     private static final int SUCCESS = 1;
@@ -59,15 +62,11 @@ public class ImageLoader {
                 return value.getByteCount();
             }
         };
-        // end
-
-        // begin 初始化DiskLruCache
         try {
             mDiskCache = DiskLruCache.open(getCacheDir(), getAppVersion(), 1, 10 * 1024 * 1024);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        // end
     }
 
     public void load(final ImageView imageView, final String url) {
@@ -133,7 +132,6 @@ public class ImageLoader {
         }, url);
     }
 
-    // 缩放图片
     private Bitmap scaleImage(Bitmap bmp) {
         int sample = bmp.getWidth() / sImageWidth;
         if (sample <= 0) {
@@ -143,20 +141,16 @@ public class ImageLoader {
         return ThumbnailUtils.extractThumbnail(bmp, sImageWidth, height);
     }
 
-    // 从memory中获取
     private Bitmap getFromLru(String url) {
         return mLruCache.get(MD5.getMD5(url));
     }
 
-    // 添加到内存中
     private void addToLru(String url, Bitmap bmp) {
         if (getFromLru(url) == null) {
-            System.out.println("++addToLru");
             mLruCache.put(MD5.getMD5(url), bmp);
         }
     }
 
-    // 从本地缓存获取
     private Bitmap getFromDisk(String url) {
         Bitmap bmp = null;
         try {
@@ -170,9 +164,7 @@ public class ImageLoader {
         return bmp;
     }
 
-    // 添加到本地缓存
     private void addToDisk(String url, Bitmap bmp) throws Exception {
-        System.out.println("+++addtoDisk");
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         bmp.compress(Bitmap.CompressFormat.PNG, 100, baos);
         byte[] buf = baos.toByteArray();
@@ -184,7 +176,6 @@ public class ImageLoader {
         editor.commit();
     }
 
-    // 获取缓存目录
     private File getCacheDir() {
         File dir = null;
         if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
@@ -195,7 +186,6 @@ public class ImageLoader {
         return dir;
     }
 
-    // 获取软件版本
     private int getAppVersion() {
         PackageInfo pi;
         try {

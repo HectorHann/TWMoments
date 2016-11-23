@@ -10,7 +10,9 @@ import retrofit2.http.GET;
 import retrofit2.http.Path;
 import retrofit2.http.Url;
 import rx.Observable;
-
+/**
+ * Created by Han on 2016/11/21.
+ */
 public interface ApiService {
 
     @GET("user/{name}")
