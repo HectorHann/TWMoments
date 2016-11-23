@@ -1,5 +1,7 @@
 package com.han.moments.entity;
 
+import android.text.TextUtils;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
@@ -47,4 +49,9 @@ public class UserInfoDTO extends BaseDTO {
     public void setUsername(String username) {
         this.username = username;
     }
+
+    public String getDisplayName() {
+        return TextUtils.isEmpty(nick) ? username : nick;
+    }
+
 }

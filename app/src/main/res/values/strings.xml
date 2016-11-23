@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">WeChatMoments</string>
+    <string name="loading">loading...</string>
+    <string name="nomore">no more data</string>
 </resources>

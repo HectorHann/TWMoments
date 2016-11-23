@@ -12,7 +12,7 @@ import java.util.List;
  */
 
 public class DataProvider {
-    private static final int PER_PAGER_COUNT = 5;
+    public static final int PER_PAGER_COUNT = 5;
     private List<TweetsDTO> mTweetsList;
 
     private DataProvider() {
@@ -35,7 +35,7 @@ public class DataProvider {
 
     public List<TweetsDTO> getTweetsList(int pager) {
         List<TweetsDTO> result = new ArrayList<>();
-        if (pager < 0 || pager > mTweetsList.size() / PER_PAGER_COUNT + 1) {
+        if (pager < 0 || pager > mTweetsList.size() / PER_PAGER_COUNT) {
             Log.i(this.getClass().getSimpleName(), "no result. pager = " + pager);
             return result;
         }
@@ -45,6 +45,7 @@ public class DataProvider {
         if (end >= mTweetsList.size()) {
             end = mTweetsList.size() - 1;
         }
+        Log.i(DataProvider.class.getSimpleName(),start+"|"+end+"|"+mTweetsList.size());
         result = mTweetsList.subList(start, end);
         return result;
     }

@@ -66,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initRecycleView() {
-        mRefreshAdapter = new RefreshAdapter(this, mTweetsList);
+        mRefreshAdapter = new RefreshAdapter(this, mTweetsList, mUserInfo);
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         mRecyclerView.setAdapter(mRefreshAdapter);
@@ -101,6 +101,7 @@ public class MainActivity extends AppCompatActivity {
             public void onNext(UserInfoDTO userInfoDTO) {
                 Log.i(TAG, "getUserInfo finish");
                 mUserInfo = userInfoDTO;
+                mRefreshAdapter.setUserInfo(mUserInfo);
             }
         }, username);
     }
@@ -143,8 +144,9 @@ public class MainActivity extends AppCompatActivity {
                         mTweetsList.addAll(DataProvider.getInstance().getTweetsList(cur_pager));
                         mRefreshAdapter.notifyDataSetChanged();
                         mSwipeRefreshLayout.setRefreshing(false);
+                        mRefreshAdapter.changeMoreStatus(mRefreshAdapter.LOAD_FINISH);
                     }
-                }, 3000);
+                }, 1000);
 
             }
         });
@@ -159,15 +161,25 @@ public class MainActivity extends AppCompatActivity {
                 int totalItemCount = layoutManager.getItemCount();
                 int lastVisibleItem = layoutManager.findLastVisibleItemPosition();
 
-                if (totalItemCount < (lastVisibleItem + 1)) {
-                    mRefreshAdapter.changeMoreStatus(mRefreshAdapter.LOADING_MORE);
+                if (totalItemCount == lastVisibleItem + 2) {
+                    if (mRefreshAdapter.getMoreStatus() == RefreshAdapter.LOAD_NO_MORE || mRefreshAdapter.getMoreStatus() == RefreshAdapter.LOADING) {
+                        return;
+                    }
+                    mRefreshAdapter.changeMoreStatus(mRefreshAdapter.LOADING);
                     new Handler().postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            mTweetsList.addAll(DataProvider.getInstance().getTweetsList(++cur_pager));
-                            mRefreshAdapter.changeMoreStatus(mRefreshAdapter.PULLUP_LOAD_MORE);
+                            Log.i(TAG,"getTweets");
+                            List<TweetsDTO> moredate = DataProvider.getInstance().getTweetsList(++cur_pager);
+                            if (moredate.isEmpty() || moredate.size() < DataProvider.getInstance().PER_PAGER_COUNT) {
+                                mRefreshAdapter.changeMoreStatus(mRefreshAdapter.LOAD_NO_MORE);
+                            } else {
+                                mTweetsList.addAll(moredate);
+                                mRefreshAdapter.notifyDataSetChanged();
+                                mRefreshAdapter.changeMoreStatus(mRefreshAdapter.LOAD_FINISH);
+                            }
                         }
-                    }, 3000);
+                    }, 1000);
                 }
             }
         });
