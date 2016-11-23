@@ -1,17 +1,23 @@
 package com.han.moments.adpter;
 
 import android.content.Context;
+import android.graphics.Point;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.han.moments.R;
+import com.han.moments.entity.ImagesDTO;
 import com.han.moments.entity.TweetsDTO;
 import com.han.moments.entity.UserInfoDTO;
 import com.han.moments.imageloader.ImageLoader;
@@ -40,12 +46,19 @@ public class RefreshAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     private int mLoadMoreStatus = LOAD_FINISH;
 
+    private int mScreenWidth;
+
 
     public RefreshAdapter(Context context, List<TweetsDTO> datas, UserInfoDTO user) {
         mContext = context;
         mInflater = LayoutInflater.from(context);
         mDatas = datas;
         mUser = user;
+        WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        Display display = windowManager.getDefaultDisplay();
+        Point point = new Point();
+        display.getSize(point);
+        mScreenWidth = point.x;
     }
 
     @Override
@@ -53,7 +66,7 @@ public class RefreshAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
         if (viewType == TYPE_ITEM) {
             View itemView = mInflater.inflate(R.layout.recylerview_item, parent, false);
-            return new ItemViewHolder(itemView);
+            return new TweetItemViewHolder(itemView);
         } else if (viewType == TYPE_FOOTER) {
             View itemView = mInflater.inflate(R.layout.load_more_view, parent, false);
 
@@ -69,14 +82,24 @@ public class RefreshAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
 
         Log.i(this.getClass().getSimpleName(), "hoder = " + holder.toString());
-        if (holder instanceof ItemViewHolder) {
-            ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
-            TweetsDTO tweetsDTO = mDatas.get(position -1);
+        if (holder instanceof TweetItemViewHolder) {
+            TweetItemViewHolder tweetItemViewHolder = (TweetItemViewHolder) holder;
+            TweetsDTO tweetsDTO = mDatas.get(position - 1);
             if (tweetsDTO.isUsefulTweet()) {
-                itemViewHolder.mSenderHead.setTag(tweetsDTO.getSender().getAvatar());
-                itemViewHolder.mSenderName.setText(tweetsDTO.getSender().getDisplayName());
-                itemViewHolder.mSenderContent.setText(tweetsDTO.getContent());
-                ImageLoader.getInstance().load(itemViewHolder.mSenderHead, tweetsDTO.getSender().getAvatar());
+                tweetItemViewHolder.mSenderHead.setTag(tweetsDTO.getSender().getAvatar());
+                tweetItemViewHolder.mSenderName.setText(tweetsDTO.getSender().getDisplayName());
+                tweetItemViewHolder.mSenderContent.setText(tweetsDTO.getContent());
+                ImageLoader.getInstance().load(tweetItemViewHolder.mSenderHead, tweetsDTO.getSender().getAvatar());
+
+                if (tweetsDTO.getImages() != null && !tweetsDTO.getImages().isEmpty()) {
+                    ViewGroup.LayoutParams gridParams = tweetItemViewHolder.mImageGrid.getLayoutParams();
+                    gridParams.width = (int) (mScreenWidth * 0.85);
+                    gridParams.height = (int) ((gridParams.width / 3) * Math.ceil((double) tweetsDTO.getImages().size() / 3.0));
+                    tweetItemViewHolder.mImageGrid.setLayoutParams(gridParams);
+                    tweetItemViewHolder.mImageGrid.setLayoutManager(new GridLayoutManager(mContext, 3, LinearLayoutManager.VERTICAL, false));
+                    tweetItemViewHolder.mImageGrid.setAdapter(new HorizontalAdapter(tweetsDTO.getImages()));
+                    tweetItemViewHolder.mImageGrid.setTag(tweetsDTO.toString());
+                }
             }
         } else if (holder instanceof FooterViewHolder) {
             FooterViewHolder footerViewHolder = (FooterViewHolder) holder;
@@ -97,7 +120,7 @@ public class RefreshAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
             }
         } else if (holder instanceof HeardViewHolder) {
-            if (mUser == null){
+            if (mUser == null) {
                 return;
             }
             HeardViewHolder heardViewHolder = (HeardViewHolder) holder;
@@ -126,15 +149,19 @@ public class RefreshAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         return TYPE_ITEM;
     }
 
-    public class ItemViewHolder extends RecyclerView.ViewHolder {
+    public class TweetItemViewHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.iv_sender_head)
         ImageView mSenderHead;
         @BindView(R.id.tv_sender_name)
         TextView mSenderName;
         @BindView(R.id.tv_sender_content)
         TextView mSenderContent;
+        @BindView(R.id.rv_image_grid)
+        RecyclerView mImageGrid;
+        @BindView(R.id.layout_tweet_content)
+        LinearLayout mTweetContentLayout;
 
-        public ItemViewHolder(View itemView) {
+        public TweetItemViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
         }
@@ -169,6 +196,51 @@ public class RefreshAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         }
     }
 
+
+    public class HorizontalAdapter extends RecyclerView.Adapter {
+
+        private List<ImagesDTO> mImageUrllist;
+
+
+        public HorizontalAdapter(List<ImagesDTO> images) {
+            mImageUrllist = images;
+        }
+
+
+        @Override
+        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            View itemView = mInflater.inflate(R.layout.image_item, parent, false);
+            return new ImageItemViewHolder(itemView);
+        }
+
+        @Override
+        public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+            ImageItemViewHolder imageItemViewHolder = (ImageItemViewHolder) holder;
+            String url = mImageUrllist.get(position).getUrl();
+            imageItemViewHolder.mimageitem.setTag(url);
+            ImageLoader.getInstance().load(imageItemViewHolder.mimageitem, url);
+        }
+
+
+        @Override
+        public int getItemCount() {
+            return mImageUrllist == null ? 0 : mImageUrllist.size();
+        }
+
+        public class ImageItemViewHolder extends RecyclerView.ViewHolder {
+            @BindView(R.id.iv_imageview_item)
+            ImageView mimageitem;
+
+            public ImageItemViewHolder(View itemView) {
+                super(itemView);
+                ButterKnife.bind(this, itemView);
+                ViewGroup.LayoutParams layoutParams = mimageitem.getLayoutParams();
+                layoutParams.width = layoutParams.height = (int) (mScreenWidth * 0.7 /3);
+                mimageitem.setLayoutParams(layoutParams);
+            }
+        }
+    }
+
     public void changeMoreStatus(int status) {
         mLoadMoreStatus = status;
         notifyDataSetChanged();
@@ -178,7 +250,7 @@ public class RefreshAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         return mLoadMoreStatus;
     }
 
-    public void setUserInfo(UserInfoDTO userInfo){
+    public void setUserInfo(UserInfoDTO userInfo) {
         mUser = userInfo;
         notifyDataSetChanged();
     }
