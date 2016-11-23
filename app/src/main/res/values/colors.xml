@@ -2,8 +2,9 @@
 <resources>
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
+    <color name="colorAccent">#576B95</color>
     <color name="username">#576B95</color>
     <color name="commentbg">#EEEEEEEE</color>
     <color name="textcolor">#454545</color>
+    <color name="translucent">#00000000</color>
 </resources>

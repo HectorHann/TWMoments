@@ -10,6 +10,8 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.View;
+import android.widget.LinearLayout;
 
 import com.han.moments.adpter.DividerLineDecoration;
 import com.han.moments.adpter.RecyclerViewAdapter;
@@ -37,11 +39,14 @@ public class MainActivity extends AppCompatActivity {
     private List<TweetsDTO> mTweetsList = new ArrayList<>();
 
 
+    @BindView(R.id.layout_empty)
+    LinearLayout mEmptyLayout;
     @BindView(R.id.view_recyclerview)
     RecyclerView mRecyclerView;
     @BindView(R.id.layout_swiperefresh)
     SwipeRefreshLayout mSwipeRefreshLayout;
     RecyclerViewAdapter mRefreshAdapter;
+
 
     private int cur_pager = 0;
 
@@ -131,6 +136,7 @@ public class MainActivity extends AppCompatActivity {
                 mTweetsList.addAll(DataProvider.getInstance().getTweetsList(cur_pager));
                 mRefreshAdapter.notifyDataSetChanged();
                 mSwipeRefreshLayout.setRefreshing(false);
+                mEmptyLayout.setVisibility(View.GONE);
 
             }
         }, username);
