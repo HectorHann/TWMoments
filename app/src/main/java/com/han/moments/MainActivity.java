@@ -13,7 +13,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 
-import com.han.moments.adpter.DividerLineDecoration;
 import com.han.moments.adpter.RecyclerViewAdapter;
 import com.han.moments.entity.TweetsDTO;
 import com.han.moments.entity.UserInfoDTO;
@@ -76,8 +75,8 @@ public class MainActivity extends AppCompatActivity {
     private void initRecycleView() {
         mRefreshAdapter = new RecyclerViewAdapter(this, mTweetsList, mUserInfo);
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
-        mRecyclerView.addItemDecoration(new DividerLineDecoration(this,
-                DividerLineDecoration.VERTICAL_LIST));
+//        mRecyclerView.addItemDecoration(new DividerLineDecoration(this,
+//                DividerLineDecoration.VERTICAL_LIST));
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         mRecyclerView.setAdapter(mRefreshAdapter);
     }
@@ -105,6 +104,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onError(Throwable e) {
                 Log.e(TAG, e.toString());
+                mEmptyLayout.setVisibility(View.GONE);
             }
 
             @Override
@@ -121,11 +121,13 @@ public class MainActivity extends AppCompatActivity {
         HttpTools.getInstance().getUserTweets(new Subscriber<List<TweetsDTO>>() {
             @Override
             public void onCompleted() {
+                mEmptyLayout.setVisibility(View.GONE);
             }
 
             @Override
             public void onError(Throwable e) {
                 Log.e(TAG, e.toString());
+                mEmptyLayout.setVisibility(View.GONE);
             }
 
             @Override
@@ -136,8 +138,6 @@ public class MainActivity extends AppCompatActivity {
                 mTweetsList.addAll(DataProvider.getInstance().getTweetsList(cur_pager));
                 mRefreshAdapter.notifyDataSetChanged();
                 mSwipeRefreshLayout.setRefreshing(false);
-                mEmptyLayout.setVisibility(View.GONE);
-
             }
         }, username);
     }

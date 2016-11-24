@@ -75,15 +75,30 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
         Log.i(this.getClass().getSimpleName(), "hoder = " + holder.toString());
         if (holder instanceof TweetItemViewHolder) {
+            final TweetsDTO tweetsDTO = mDatas.get(position - 1);
             TweetItemViewHolder tweetItemViewHolder = (TweetItemViewHolder) holder;
-            TweetsDTO tweetsDTO = mDatas.get(position - 1);
             tweetItemViewHolder.mSenderHead.setTag(tweetsDTO.getSender().getAvatar());
             tweetItemViewHolder.mSenderName.setText(tweetsDTO.getSender().getDisplayName());
             tweetItemViewHolder.mSenderContent.setText(tweetsDTO.getContent());
             ImageLoader.getInstance().load(tweetItemViewHolder.mSenderHead, tweetsDTO.getSender().getAvatar());
 
+            List<CommentsDTO> commentsDTOs = tweetsDTO.getComments();
+            if (commentsDTOs != null && !commentsDTOs.isEmpty()) {
+                tweetItemViewHolder.mCommentLayout.removeAllViews();
+                tweetItemViewHolder.mCommentLayout.setVisibility(View.VISIBLE);
+                for (CommentsDTO item : commentsDTOs) {
+                    View commentview = mInflater.inflate(R.layout.comment_item, null);
+                    TextView tv_comment = (TextView) commentview.findViewById(R.id.tv_comment);
+                    mixCommentContent(tv_comment, item.getSender().getDisplayName(), item.getContent());
+                    tweetItemViewHolder.mCommentLayout.addView(commentview);
+                }
+            }else {
+                tweetItemViewHolder.mCommentLayout.setVisibility(View.GONE);
+            }
+
             List<ImagesDTO> imagesDTOs = tweetsDTO.getImages();
             if (imagesDTOs != null && !imagesDTOs.isEmpty()) {
+                tweetItemViewHolder.mImageGrid.setVisibility(View.VISIBLE);
                 ViewGroup.LayoutParams gridParams = tweetItemViewHolder.mImageGrid.getLayoutParams();
                 gridParams.width = (int) (ScreenUtil.getScreenWidth(mContext) * 0.85);
                 int itemwidth = (gridParams.width - ScreenUtil.dip2px(mContext, 2) * 6) / 3;
@@ -93,17 +108,10 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 tweetItemViewHolder.mImageGrid.setLayoutManager(new GridLayoutManager(mContext, 3, LinearLayoutManager.VERTICAL, false));
                 tweetItemViewHolder.mImageGrid.setAdapter(new GridViewAdapter(tweetsDTO.getImages(), mContext, itemwidth));
                 tweetItemViewHolder.mImageGrid.setTag(tweetsDTO.toString());
+            }else {
+                tweetItemViewHolder.mImageGrid.setVisibility(View.GONE);
             }
-            List<CommentsDTO> commentsDTOs = tweetsDTO.getComments();
-            if (commentsDTOs != null && !commentsDTOs.isEmpty()) {
-                tweetItemViewHolder.mCommentLayout.removeAllViews();
-                for (CommentsDTO item : commentsDTOs) {
-                    View commentview = mInflater.inflate(R.layout.comment_item, null);
-                    TextView tv_comment = (TextView) commentview.findViewById(R.id.tv_comment);
-                    mixCommentContent(tv_comment, item.getSender().getDisplayName(), item.getContent());
-                    tweetItemViewHolder.mCommentLayout.addView(commentview);
-                }
-            }
+
         } else if (holder instanceof FooterViewHolder) {
             FooterViewHolder footerViewHolder = (FooterViewHolder) holder;
             switch (mLoadMoreStatus) {

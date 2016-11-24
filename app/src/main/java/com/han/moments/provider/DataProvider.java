@@ -46,14 +46,14 @@ public class DataProvider {
         if (end >= mTweetsList.size()) {
             end = mTweetsList.size() - 1;
         }
-        Log.i(DataProvider.class.getSimpleName(),start+"|"+end+"|"+mTweetsList.size());
+        Log.i(DataProvider.class.getSimpleName(), start + "|" + end + "|" + mTweetsList.size());
         result.addAll(mTweetsList.subList(start, end));
-        if (result.isEmpty()){
+        if (result.isEmpty()) {
             return result;
         }
         Iterator<TweetsDTO> iterator = result.iterator();
-        while (iterator.hasNext()){
-            if (!iterator.next().isUsefulTweet()){
+        while (iterator.hasNext()) {
+            if (!iterator.next().isUsefulTweet()) {
                 iterator.remove();
             }
         }

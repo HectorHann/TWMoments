@@ -16,7 +16,7 @@ import java.util.List;
 /**
  * Created by Han on 2016/11/23.
  */
-public class GridViewAdapter extends RecyclerView.Adapter {
+public class GridViewAdapter extends RecyclerView.Adapter<ImageItemViewHolder> {
 
     private final LayoutInflater mInflater;
     private List<ImagesDTO> mImageUrllist;
@@ -33,17 +33,16 @@ public class GridViewAdapter extends RecyclerView.Adapter {
 
 
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public ImageItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = mInflater.inflate(R.layout.image_item, parent, false);
         return new ImageItemViewHolder(itemView, mItemWidth);
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        ImageItemViewHolder imageItemViewHolder = (ImageItemViewHolder) holder;
+    public void onBindViewHolder(ImageItemViewHolder holder, int position) {
         String url = mImageUrllist.get(position).getUrl();
-        imageItemViewHolder.mimageitem.setTag(url);
-        ImageLoader.getInstance().load(imageItemViewHolder.mimageitem, url);
+        holder.mimageitem.setTag(url);
+        ImageLoader.getInstance().load(holder.mimageitem, url);
     }
 
 

@@ -21,7 +21,7 @@ import java.util.List;
  * Created by Han on 2016/11/23.
  */
 
-public class CommentAdapter extends RecyclerView.Adapter {
+public class CommentAdapter extends RecyclerView.Adapter<CommentItemViewHolder> {
     private final LayoutInflater mInflater;
     private List<CommentsDTO> mCommentList;
     private Context mContext;
@@ -35,18 +35,17 @@ public class CommentAdapter extends RecyclerView.Adapter {
 
 
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public CommentItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = mInflater.inflate(R.layout.comment_item, parent, false);
         return new CommentItemViewHolder(itemView);
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        CommentItemViewHolder commentItemViewHolder = (CommentItemViewHolder) holder;
+    public void onBindViewHolder(CommentItemViewHolder holder, int position) {
         CommentsDTO commentsDTO = mCommentList.get(position);
         String name = commentsDTO.getSender().getDisplayName();
         String content = commentsDTO.getContent();
-        mixCommentContent(commentItemViewHolder.mComment, name, content);
+        mixCommentContent(holder.mComment, name, content);
     }
 
 
